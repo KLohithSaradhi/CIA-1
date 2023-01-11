@@ -36,7 +36,23 @@ def DP(alignmentMatrix, row, column, visitedMatrix, s1, s2):
                 DP(alignmentMatrix, row + 1, column, visitedMatrix, s1, s2)
         except IndexError:
             DP(alignmentMatrix, 1, column + 1, visitedMatrix, s1, s2)
-            
+
+
+def backTrack(AM, row, column, s1, s2):
+    
+    if (row == column == 0):
+        return
+    else:
+        if AM[row][column] - AM[row-1][column-1] == MATCH:
+            print(s1[row - 1], s2[column - 1])
+            backTrack(AM, row-1, column - 1, s1, s2)
+        elif AM[row][column] - AM[row-1][column] == MISMATCH:
+            print(s1[row - 1], "_")
+            backTrack(AM, row-1, column, s1, s2)
+        elif AM[row][column] - AM[row][column-1] == MISMATCH:
+            print("_", s2[column - 1])
+            backTrack(AM, row, column - 1, s1, s2)
+
         
 AM = [[0 for i in range(17)] for j in range(17)]
 VM = [[0 for i in range(17)] for j in range(17)]
@@ -71,3 +87,9 @@ for h in range(4):
 
 print(MAX_ELEMENTS)
 print(INDICES)
+
+for i in range(4):
+    print("=========================")
+    backTrack(AM, INDICES[i][0], INDICES[i][1], S1, S2)
+
+
