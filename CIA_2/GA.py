@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 
 
 class Layer : 
@@ -148,7 +148,7 @@ X = data.drop("Personal Loan", axis = 1).values
 Y = data["Personal Loan"].values.reshape(-1,1)
 from sklearn.model_selection import train_test_split
 
-x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = 0.1)
+x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = 0.1, random_state=257)
 
 from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
@@ -175,9 +175,18 @@ while epoch < epochs:
 
     epoch += 1
     print("epoch : ",epoch," : ",acc)
+
+#%%    
+bestWeights = ga.POPULATION[0]
     
+model.setLayerWeights(bestWeights)
+
+pred = np.round(model.forwardpass(x_test))
+
+print(accuracy_score(pred, y_test))
     
-    
+#%%
+print(classification_report(pred, y_test))
     
                     
                 
