@@ -1,0 +1,71 @@
+Test Conditions : 
+    * test size : 10%
+    * data sampling is seeded
+    * all algorithms are run for 100 epochs
+        reason : some algorithms seem to converge only temporarily, hence is not a reliable stopping condiiton.
+    * all algorithms are run to optimise the same NN architecture of 11 input neurons, 6 hidden neurons and 1 output neurons, with GeLU and Sigmoid being activation funtions respectively.
+    * all random "populations", "swarms" and "ants" are sampled from a normal distribution of simliar parameters
+***************************************************************************************************************************************************************************************************************************************************************
+0. Baseline (torch Neural Network):
+    * test conditions:
+        learning_rate = 0.01
+        optimizer = Stochastic Gradient Descent
+        loss = Binary Cross Entropy Loss
+    * performance:
+        accuracy : 88.4%
+    
+1. GeneticAlgorithm:
+    * test conditions:
+        mutation rate = 100%
+        population size = 30
+        fitness function = accuracy
+        selection function = top n
+        elitism = dynamic
+    * performance:
+        accuracy : 97%
+        
+2. ParticleSwarmOptimisation:
+    * test conditions:
+        swarm size = 1000
+        w = 1 -> 0
+        c1 = 0.5
+        c2 = 0.5
+        evaluate function = accuracy
+    * performance:
+        accuracy = 96.8%
+               
+3. CulturalAlgorithm:
+    * test conditions:
+        population size per culture : 10
+        mutation rate : 100%
+        fitness function = accuracy
+        selection function = top n
+        elitism = dynamic
+    * performance:
+        accuracy : 95.8%
+        
+4. Ant Colony Optimisation:
+    * test conditions:
+        number of ants : 100
+    * preformance : 
+        accuracy : 90.4%
+***************************************************************************************************************************************************************************************************************************************************************
+Observations and Learnings:
+
+1. All optimisations algorithms aim to increase accuracy sacrificing the time taken to reach it.
+2. Lower populations reduce the accuracy, i.e., algos get stuck in local optima and converge very quickly.
+3. Dynamic Elitism (pooling parents and children together before selection), forces top fitness to only increase or stay the same and never dip. This ensures progress.
+4. Traditional ACO is a discrete optimisation algorithm, using discrete probability distribution functions. The reference paper gave insight to model a continuous distribution function for a continuous solution space like a neural network optimisation.
+5. The initial swarms were spawned around different locations(using varying means and stds) in PSO and in the end they all converged to around the same set of weights, proving that PSO doesnt fall into the local optima traps.
+6. Since none of these optimisation algorithms depend on gradient calculations, the options for choosing the activation functions are virtually limitless. But for the sake of having a baseline performance, standard activation functions had to be used.
+7. Probabilistic selection function in GA and CA make the algorithm converge slower.
+        
+        
+        
+        
+        
+        
+        
+        
+            
+        
