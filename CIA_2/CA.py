@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -64,12 +64,11 @@ class Belief:
     def __init__(self, individualSize, startMean, startStd):
         self.individualSize = individualSize
         
-        try:
-            _ = len(startMean)
-            self.mean = np.full(self.individualSize, startMean)
-            self.std = np.full(self.individualSize, startStd)
+        if type(startMean) != list:
+            self.mean = np.full(self.individualSize, startMean).astype(np.float32)
+            self.std = np.full(self.individualSize, startStd).astype(np.float32)
             
-        except:
+        else:
             self.mean = startMean
             self.std = startStd
             
@@ -79,8 +78,8 @@ class Belief:
     def updateTraits(self):
         temp = self.POPULATION.T
         for _ in range(len(temp)):
-            self.mean = np.mean(temp[_])
-            self.std = np.std(temp[_])
+            self.mean[_] = np.mean(temp[_])
+            self.std[_] = np.std(temp[_])
             
 
 class CA:
@@ -169,7 +168,7 @@ class CA:
             
     def classify(self):
         for belief in self.cultures:
-            z = np.sum((self.POPULATION - belief.mean), axis = 1)/(belief.std)
+            z = 1/np.sum(((self.POPULATION - belief.mean)/(belief.std)), axis = 1)
             newPopulationOfBelief = np.argsort(z)[:self.populationSizePerBelief]
             belief.POPULATION = self.POPULATION[newPopulationOfBelief]
             self.POPULATION = self.POPULATION[np.argsort(z)[self.populationSizePerBelief:]]
@@ -194,7 +193,7 @@ X = data.drop("Personal Loan", axis = 1).values
 Y = data["Personal Loan"].values.reshape(-1,1)
 from sklearn.model_selection import train_test_split
 
-x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = 0.1)
+x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size = 0.1, random_state=257)
 
 from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
@@ -225,6 +224,20 @@ while epoch < epochs:
 
     print("epoch : ",epoch," : ",acc)
     epoch += 1
+    
+#%%
+bestWeights = ca.POPULATION[0]
+    
+model.setLayerWeights(bestWeights)
+
+pred = np.round(model.forwardpass(x_test))
+
+print(accuracy_score(pred, y_test))
+    
+#%%
+print(classification_report(pred, y_test))
+    
+                    
     
                     
                 
